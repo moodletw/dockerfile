@@ -1,0 +1,20 @@
+#!/bin/bash
+
+echo "placeholder" > /var/moodledata/placeholder
+chown -R apache:apache /var/moodledata
+chmod 777 /var/moodledata
+
+#read pid cmd state ppid pgrp session tty_nr tpgid rest < /proc/self/stat
+#trap "kill -TERM -$pgrp; exit" EXIT TERM KILL SIGKILL SIGTERM SIGQUIT
+
+#start up cron
+#/usr/sbin/cron
+
+#tail -F /var/log/httpd/* &
+
+# Make sure we're not confused by old, incompletely-shutdown httpd context after restarting the container.
+# httpd won't start correctly if it thinks it is already running. ref: https://github.com/CentOS/CentOS-Dockerfiles/blob/master/httpd/centos7/run-httpd.sh
+rm -rf /run/httpd/* /tmp/httpd*
+
+exec /usr/sbin/apachectl -DFOREGROUND
+
